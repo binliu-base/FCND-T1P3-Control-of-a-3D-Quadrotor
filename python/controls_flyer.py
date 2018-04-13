@@ -16,6 +16,7 @@ from controller import NonlinearController
 from udacidrone.connection import MavlinkConnection  # noqa: F401
 from udacidrone.messaging import MsgID
 
+import visdom
 
 class States(Enum):
     MANUAL = 0
@@ -47,7 +48,47 @@ class ControlsFlyer(UnityDrone):
         
         self.register_callback(MsgID.ATTITUDE, self.attitude_callback)
         self.register_callback(MsgID.RAW_GYROSCOPE, self.gyro_callback)
+
+        # default opens up to http://localhost:8097
+        self.v = visdom.Visdom()
+
+    #    # Plot NE
+    #     ne = np.array(self.local_position[:2]).reshape(-1, 2)
+
+    #     self.ne_plot = self.v.scatter(ne, opts=dict(
+    #         title="Local position (north, east)", 
+    #         xlabel='North', 
+    #         ylabel='East'
+    #     ))
+
+    #     # Plot D
+    #     d = np.array([self.local_position[2]])        
+    #     self.t = 1
+    #     print(d.ndim) 
+    #     self.d_plot = self.v.line(d, X=np.array([self.t]), opts=dict(
+    #         title="Altitude (meters)", 
+    #         xlabel='Timestep', 
+    #         ylabel='Down'
+    #     ))        
+            
+        # for plotting realtime NEO data with visdom
+        # self.register_callback(MsgID.LOCAL_POSITION, self.update_ne_plot)
+        # self.register_callback(MsgID.LOCAL_POSITION, self.update_d_plot)
         
+
+    # # for plotting realtime NEO data with visdom
+    # def update_ne_plot(self):
+    #     ne = np.array([self.local_position[0], self.local_position[1]]).reshape(-1, 2)
+    #     self.v.scatter(ne, win=self.ne_plot, update='append')
+
+    # # for plotting realtime NEO data with visdom
+    # def update_d_plot(self):
+    #     d = -np.array([self.local_position[2]])
+    #     # update timestep
+    #     self.t += 1    
+    #     self.v.line(d, X=np.array([self.t]), win=self.d_plot, update='append')        
+
+
     def position_controller(self):  
         (self.local_position_target,
          self.local_velocity_target,
@@ -207,6 +248,8 @@ if __name__ == "__main__":
     conn = MavlinkConnection('tcp:127.0.0.1:5760', threaded=False, PX4=False)
     #conn = WebSocketConnection('ws://127.0.0.1:5760')
     drone = ControlsFlyer(conn)
+    # drone.test_trajectory_file = './trajectories/stay_there.txt'      
+    drone.test_trajectory_file = './test_trajectory.txt'         
     time.sleep(2)
     drone.start()
     drone.print_mission_score()
