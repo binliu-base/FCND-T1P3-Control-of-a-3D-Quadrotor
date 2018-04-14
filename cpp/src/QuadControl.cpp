@@ -45,6 +45,11 @@ void QuadControl::Init()
 
   minMotorThrust = config->Get(_config + ".minMotorThrust", 0);
   maxMotorThrust = config->Get(_config + ".maxMotorThrust", 100);
+
+  //added by binliu 180413
+  kappa = config->Get(_config + ".kappa", 0);
+  l = L / sqrt(2.f);
+
 #else
   // load params from PX4 parameter system
   //TODO
@@ -70,12 +75,25 @@ VehicleCommand QuadControl::GenerateMotorCommands(float collThrustCmd, V3F momen
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
 
-  cmd.desiredThrustsN[0] = mass * 9.81f / 4.f; // front left
-  cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
-  cmd.desiredThrustsN[2] = mass * 9.81f / 4.f; // rear left
-  cmd.desiredThrustsN[3] = mass * 9.81f / 4.f; // rear right
+  //cmd.desiredThrustsN[0] = mass * 9.81f / 4.f; // front left
+  //cmd.desiredThrustsN[1] = mass * 9.81f / 4.f; // front right
+  //cmd.desiredThrustsN[2] = mass * 9.81f / 4.f; // rear left
+  //cmd.desiredThrustsN[3] = mass * 9.81f / 4.f; // rear right
+	float tor_x = momentCmd.x;
+	float tor_y = momentCmd.y;
+	float tor_z = -momentCmd.z/kappa;
 
-  /////////////////////////////// END STUDENT CODE ////////////////////////////
+	float f1 = (collThrustCmd + tor_x / l + tor_y / l + tor_z ) / 4.f;
+	float f2 = (collThrustCmd - tor_x / l + tor_y / l - tor_z ) / 4.f;
+	float f3 = (collThrustCmd - tor_x / l - tor_y / l + tor_z) / 4.f;
+	float f4 = (collThrustCmd + tor_x / l - tor_y / l - tor_z) / 4.f; 
+
+	cmd.desiredThrustsN[0] = f1; // front left
+	cmd.desiredThrustsN[1] = f2; // front right
+	cmd.desiredThrustsN[2] = f4; // rear left
+	cmd.desiredThrustsN[3] = f3; // rear right
+
+	/////////////////////////////// END STUDENT CODE ////////////////////////////
 
   return cmd;
 }
@@ -97,8 +115,25 @@ V3F QuadControl::BodyRateControl(V3F pqrCmd, V3F pqr)
   V3F momentCmd;
 
   ////////////////////////////// BEGIN STUDENT CODE ///////////////////////////
+  float p = pqr[0];
+  float q = pqr[1];
+  float r = pqr[2];
 
-  
+  float p_c = pqrCmd[0];
+  float q_c = pqrCmd[1];
+  float r_c = pqrCmd[2];
+
+  float p_err = p_c - p;
+  float u_bar_p = kpPQR[0] * p_err;
+
+  float q_err = q_c - q;
+  float u_bar_q = kpPQR[1] * q_err;
+
+  float r_err = r_c - r;
+  float u_bar_r = kpPQR[2] * r_err;
+
+  momentCmd = V3F(u_bar_p, u_bar_q, u_bar_r);
+
 
   /////////////////////////////// END STUDENT CODE ////////////////////////////
 
