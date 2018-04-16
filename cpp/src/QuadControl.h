@@ -35,10 +35,11 @@ public:
   // controller gains
   float kpPosXY, kpPosZ;
   float kpVelXY, kpVelZ;
+  //float kpBank, kpYaw;
   float kpBank, kpYaw;
   float KiPosZ;
   V3F kpPQR;
-  
+   
   // limits & saturations
   float maxAscentRate, maxDescentRate;
   float maxSpeedXY;
@@ -48,4 +49,8 @@ public:
 
   // integral control
   float integratedAltitudeError;
+
+  //added by binliu 180413
+  float l;
+
 };
