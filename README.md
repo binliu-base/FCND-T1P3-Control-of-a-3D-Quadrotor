@@ -28,7 +28,7 @@ determine acceleration in those directions. The other input of the roll-pitch co
 
 Path 2: Lateral Position
 The lateral position controller is just a PD controller in the 2D, It generate an acceleration command in the x and y directions, which is send to the roll-pitch controller. The complicated angular control logic in the roll-pitch controller. This roll-pitch controller is the most interesting of all of them. it's job is to take a thrust command as well as the desired x and y accelerations and attitude pitch, roll, yaw and p, q, r.
-and output a target roll and pitch rate. These commanded  p and q values are send to the body rate controller. The body rate controller is just the p controller that convert p, q and r command into three rotational moment commands u2, u3 and u4. The r commands come from the yaw controller.
+and output a target roll and pitch rate. These commanded  p and q values are send to the body rate controller. The body rate controller is just the P controller that convert p, q and r command into three rotational moment commands u2, u3 and u4. The r commands come from the yaw controller.
 
 Path 3: Yaw
 The yaw controller is controlled through the reactive moment command and that command only affects yaw.
@@ -38,19 +38,19 @@ The yaw controller is controlled through the reactive moment command and that co
 
 #### 2.1 Implemented Controller 
 
-##### 2.1.1 Implemented Controller In Python
+##### 2.1.1 Implement body rate control in python and C++
 
-###### Implemented body rate control 
-The snipped below (line 165 in controller.py) are the implemented body rate control.
+The body rate control is a P controller on body rates to commanded moments. Logic of body rate control as follows,
 ```python
-    def body_rate_control(self, body_rate_cmd, body_rate):
-
-        pqr_err = body_rate_cmd - body_rate
-        angular_acc = self.k_p_pqr * pqr_err
-        tau = MOI * angular_acc
-        tau = np.clip(tau, -MAX_TORQUE, MAX_TORQUE)        
-        return tau
+        body_rate_err = body_rate_cmd - body_rate
+        angular acceleration = self.k_p_pqr * pqr_err
+        rotational moment = I * angular acceleration
+        rotational moment = np.clip(tau, -MAX_TORQUE, MAX_TORQUE) 
 ```
+
+- python: lines 165 to 178 in controller.py
+- C++: lines 97 to 117 in QuadControl.cpp
+
 ###### Implement roll pitch control 
 The snipped below (line 137 in controller.py) are the implemented roll pitch control.
 ```python
@@ -119,10 +119,11 @@ The snipped below (line 180 in controller.py) are the implemented yaw control.
         return self.k_p_yaw * yaw_err
 ```
 
-
 ##### 2.1.1 Implemented Controller In C++
-###### Implemented body rate control 
-###### Implement roll pitch control 
+###### Implemented body rate control
+
+###### Implement roll pitch control
+
 ###### Implement altitude control
 ###### Implement lateral position 
 ###### Implement yaw control
