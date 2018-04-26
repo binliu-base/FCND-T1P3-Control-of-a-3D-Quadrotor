@@ -16,7 +16,7 @@ Finally, We test the C++ code controller with another simulator that udacity pro
 
 The 3D Control Architecture Diagram shows a cascade PID control system with 5 controllers, 4 actuator (u1 to u4) acting on two loop processes in series.
 
-#### Trajectory Overview
+#### Trajectory Breakdown
 On the left of the diagram, The trajectory gets split into three path, Path 1: Altitude or z part, Path 2: Lateral Position or x and y part,  Path 3: Yaw. The z trajectory is handled by the altitude controller, which generate the collective thrust (u1). The x and y trajectory is first handled by the lateral position controller, which outputs acceleration targets of x and y direction. 
 Finally, the yaw trajectory is handled by the yaw controller.
 
@@ -40,7 +40,93 @@ The yaw controller is controlled through the reactive moment command and that co
 
 ##### 2.1.1 Implemented Controller In Python
 
+###### Implemented body rate control 
+The snipped below (line 165 in controller.py) are the implemented body rate control.
+```python
+    def body_rate_control(self, body_rate_cmd, body_rate):
+
+        pqr_err = body_rate_cmd - body_rate
+        angular_acc = self.k_p_pqr * pqr_err
+        tau = MOI * angular_acc
+        tau = np.clip(tau, -MAX_TORQUE, MAX_TORQUE)        
+        return tau
+```
+###### Implement roll pitch control 
+The snipped below (line 137 in controller.py) are the implemented roll pitch control.
+```python
+    def roll_pitch_controller(self, acceleration_cmd, attitude, thrust_cmd):
+        c = -thrust_cmd / DRONE_MASS_KG
+        R = euler2RM(*attitude)
+
+        b = R[0:2, 2]
+        b_c = acceleration_cmd / c
+
+        b_err = b_c - b
+        b_dot_c = self.k_p_euler_angles[:2][::-1]*b_err
+
+        r = np.array([[R[1, 0], -R[0, 0]],
+                      [R[1, 1], -R[0, 1]]],
+                     dtype=np.float)
+
+        pq_c = np.dot(r, b_dot_c) / R[2, 2]
+
+        return pq_c
+```
+
+###### Implement altitude control 
+The snipped below (line 112 in controller.py) are the implemented altitude control.
+```python
+    def altitude_control(self, altitude_cmd, vertical_velocity_cmd, altitude, vertical_velocity, attitude,
+                         acceleration_ff=0.0):
+
+        b_z = euler2RM(*attitude)[2,2]
+        z_err = altitude_cmd - altitude
+        z_dot_err = vertical_velocity_cmd - vertical_velocity
+
+        z_dot_dot_c = self.k_p_z * z_err + self.k_d_z * z_dot_err + acceleration_ff
+        
+        c = (z_dot_dot_c - GRAVITY)/b_z
+        thrust = c * DRONE_MASS_KG
+        thrust = np.clip(thrust, 0.1, MAX_THRUST)
+
+        return thrust
+```
+
+###### Implement lateral position control
+The snipped below (line 93 in controller.py) are the implemented lateral position control.
+```python
+    def lateral_position_control(self, local_position_cmd, local_velocity_cmd, local_position, local_velocity,
+                                 acceleration_ff=np.array([0.0, 0.0])):
+
+        pos_err = local_position_cmd - local_position
+        vel_err = local_velocity_cmd - local_velocity
+        acc_cmd = self.k_p_posXY * pos_err + self.k_d_posXY * vel_err + acceleration_ff
+        return acc_cmd
+```
+
+###### Implement yaw control 
+The snipped below (line 180 in controller.py) are the implemented yaw control.
+```python
+    def yaw_control(self, yaw_cmd, yaw):
+        # yaw must be within [-pi, pi)
+        yaw_cmd = np.fmod(yaw_cmd + np.pi, 2 * np.pi) - np.pi
+        yaw_err = yaw_cmd - yaw
+        if np.abs(yaw_err) > np.pi:
+            direction = -1 if yaw_err > 0 else 1
+            yaw_err = yaw_err + direction * 2 * np.pi
+        yaw_c = self.k_p_yaw * yaw_err
+
+        return self.k_p_yaw * yaw_err
+```
+
+
 ##### 2.1.1 Implemented Controller In C++
+###### Implemented body rate control 
+###### Implement roll pitch control 
+###### Implement altitude control
+###### Implement lateral position 
+###### Implement yaw control
+###### Implement calculating the motor commands given commanded thrust and moments in C++
 
 #### 2.2 Flight Evaluation
 
