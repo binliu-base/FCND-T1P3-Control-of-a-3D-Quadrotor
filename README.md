@@ -114,7 +114,7 @@ The quadrotors controlled by the trajectory following controller successfully fl
 
 ##### 2.2.2 Flight In C++
 
-##### Scenario 1
+##### Scenario 1      
 ##### Scenario 2
 ##### Scenario 3
 ##### Scenario 4    
