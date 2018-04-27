@@ -111,7 +111,7 @@ The quadrotors controlled by the trajectory following controller successfully fl
 Maximum Horizontal Error:  1.849718426647089 
 Maximum Vertical Error:  0.8289364107225587 
 Mission Time:  19.8324576 
-Mission Success:  True 
+Mission Success:  True   
 
 ![horizontal_err](./images/horizontal_err.png)  ![vertical_err](./images/vertical_err.png)
 
