@@ -41,10 +41,10 @@ The yaw controller is controlled through the reactive moment command and that co
 
 The body rate control is a P controller on body rates to commanded moments. Steps of body rate control as follows,
 ```python
-        body_rate_error = body_rate_cmd - body_rate
-        angular acceleration = Angle rate gains * body_rate_error
-        rotational moment = I * angular acceleration
-        rotational moment = np.clip(tau, -MAX_TORQUE, MAX_TORQUE) 
+        compute current body rate error in all direction (r, p and q)
+        compute angular acceleration 
+        generate the rotational moment
+		constrain the desired moment within a set of bounds (-MAX_TORQUE, MAX_TORQUE)
 ```
 
 - python: lines 165 to 178 in controller.py
@@ -57,10 +57,10 @@ Steps of roll-pitch control as follows,
 ```python
 
         get collective acceleration: c = -thrust_cmd / DRONE_MASS
-        get actual portion of acceleration on x and y direction from rotation matrix: b = R[0:2, 2] 
-        compute target portion of acceleration on x, y and z direction: b_c = acceleration_cmd / c
-        b_err = b_c - b
-        b_dot_c = self.k_p_euler_angles[:2][::-1] * b_err
+        actual portion of acceleration on x and y direction from rotation matrix
+        target portion of acceleration on x, y and z direction: b_c = acceleration_cmd / c
+        compute current position error of b term:  b_err = b_c - b
+        compute target change rate of b term: b_dot_c = self.k_p_euler_angles[:2][::-1] * b_err
         r = np.array([[R[1, 0], -R[0, 0]],
                       [R[1, 1], -R[0, 1]]],
                      dtype=np.float)
@@ -71,50 +71,37 @@ Steps of roll-pitch control as follows,
 - C++: lines 125 to 168 in QuadControl.cpp
 
 ###### Implement altitude control 
-The snipped below (line 112 in controller.py) are the implemented altitude control.
+Steps of altitude control as follows,
 ```python
-    def altitude_control(self, altitude_cmd, vertical_velocity_cmd, altitude, vertical_velocity, attitude,
-                         acceleration_ff=0.0):
-
-        b_z = euler2RM(*attitude)[2,2]
-        z_err = altitude_cmd - altitude
-        z_dot_err = vertical_velocity_cmd - vertical_velocity
-
-        z_dot_dot_c = self.k_p_z * z_err + self.k_d_z * z_dot_err + acceleration_ff
-        
-        c = (z_dot_dot_c - GRAVITY)/b_z
-        thrust = c * DRONE_MASS_KG
-        thrust = np.clip(thrust, 0.1, MAX_THRUST)
-
-        return thrust
+        get actual b term on z direction from rotation matrix
+        compute current position error in z direction
+        compute current vertical error in z direction
+        compute target acceleration in z direction
+		generate the thrust command 
+		constrain the thrust command within a set of bounds (0.1, MAX_THRUST)
 ```
+- python: lines 113 to 136 in controller.py
+- C++: lines 170 to 207 in QuadControl.cpp
 
 ###### Implement lateral position control
-The snipped below (line 93 in controller.py) are the implemented lateral position control.
+Steps of lateral position control as follows,
 ```python
-    def lateral_position_control(self, local_position_cmd, local_velocity_cmd, local_position, local_velocity,
-                                 acceleration_ff=np.array([0.0, 0.0])):
-
-        pos_err = local_position_cmd - local_position
-        vel_err = local_velocity_cmd - local_velocity
-        acc_cmd = self.k_p_posXY * pos_err + self.k_d_posXY * vel_err + acceleration_ff
-        return acc_cmd
+        compute current position error in all direction in world frame
+        compute current velocity error in all direction in world frame	
+		generate the target acceleration command 
+		constrain thetarget acceleration within a set of bounds (-maxAccelXY, maxAccelXY)
 ```
+- python: lines 94 to 110 in controller.py
+- C++: lines 210 to 251 in QuadControl.cpp
 
 ###### Implement yaw control 
-The snipped below (line 180 in controller.py) are the implemented yaw control.
+Steps of yaw control as follows,
 ```python
-    def yaw_control(self, yaw_cmd, yaw):
-        # yaw must be within [-pi, pi)
-        yaw_cmd = np.fmod(yaw_cmd + np.pi, 2 * np.pi) - np.pi
-        yaw_err = yaw_cmd - yaw
-        if np.abs(yaw_err) > np.pi:
-            direction = -1 if yaw_err > 0 else 1
-            yaw_err = yaw_err + direction * 2 * np.pi
-        yaw_c = self.k_p_yaw * yaw_err
-
-        return self.k_p_yaw * yaw_err
+        compute current yaw error
+		generate the target yaw rate command
 ```
+- python: lines 181 to 198 in controller.py
+- C++: lines 255 to 274 in QuadControl.cpp
 
 ##### 2.1.1 Implemented Controller In C++
 ###### Implemented body rate control
