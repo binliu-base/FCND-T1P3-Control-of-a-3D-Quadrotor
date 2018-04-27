@@ -2,8 +2,7 @@
 Udacity Flying Car Nanodegree - Term 1 - Project 3 - 3D Quadrotor Controller
 
 ### 1. Project Overview
-Goal of this project is to design and implement a trajectory following controller, which control the quadrotors  
-to find the sequance of propeller turn rates so that the drone to fly the desired 3D trajectory.
+Goal of this project is to design and build a 3D controller, which will control the quadrotors to fly the desired 3D trajectory in the simulator. 
 
 The project is in two parts. First, We using the Python/Unity simulator environment for rapid prototyping of the desired controller architecture. 
 Once it meet the requirements for a working controller, then we migrate that control architecture to a C++ project containing real vehicle code.
@@ -40,10 +39,10 @@ The yaw controller is controlled through the reactive moment command and that co
 
 ##### 2.1.1 Implement body rate control in python and C++
 
-The body rate control is a P controller on body rates to commanded moments. Logic of body rate control as follows,
+The body rate control is a P controller on body rates to commanded moments. Steps of body rate control as follows,
 ```python
-        body_rate_err = body_rate_cmd - body_rate
-        angular acceleration = self.k_p_pqr * pqr_err
+        body_rate_error = body_rate_cmd - body_rate
+        angular acceleration = Angle rate gains * body_rate_error
         rotational moment = I * angular acceleration
         rotational moment = np.clip(tau, -MAX_TORQUE, MAX_TORQUE) 
 ```
@@ -51,27 +50,25 @@ The body rate control is a P controller on body rates to commanded moments. Logi
 - python: lines 165 to 178 in controller.py
 - C++: lines 97 to 117 in QuadControl.cpp
 
-###### Implement roll pitch control 
-The snipped below (line 137 in controller.py) are the implemented roll pitch control.
+##### 2.1.2  Implement roll pitch control 
+The roll-pitch control is also a P controller in the body frame, Which is to take a thrust command as well as the desired x and y accelerations and attitude pitch, roll, yaw and p, q, r. and output a target roll and pitch rate.
+Steps of roll-pitch control as follows,
+
 ```python
-    def roll_pitch_controller(self, acceleration_cmd, attitude, thrust_cmd):
-        c = -thrust_cmd / DRONE_MASS_KG
-        R = euler2RM(*attitude)
 
-        b = R[0:2, 2]
-        b_c = acceleration_cmd / c
-
+        get collective acceleration: c = -thrust_cmd / DRONE_MASS
+        get actual portion of acceleration on x and y direction from rotation matrix: b = R[0:2, 2] 
+        compute target portion of acceleration on x, y and z direction: b_c = acceleration_cmd / c
         b_err = b_c - b
-        b_dot_c = self.k_p_euler_angles[:2][::-1]*b_err
-
+        b_dot_c = self.k_p_euler_angles[:2][::-1] * b_err
         r = np.array([[R[1, 0], -R[0, 0]],
                       [R[1, 1], -R[0, 1]]],
                      dtype=np.float)
+        generate the target roll and pitch rate with matrix multiplication: pq_c = np.dot(r, b_dot_c) / R[2, 2]
 
-        pq_c = np.dot(r, b_dot_c) / R[2, 2]
-
-        return pq_c
 ```
+- python: lines 138 to 164 in controller.py
+- C++: lines 125 to 168 in QuadControl.cpp
 
 ###### Implement altitude control 
 The snipped below (line 112 in controller.py) are the implemented altitude control.
