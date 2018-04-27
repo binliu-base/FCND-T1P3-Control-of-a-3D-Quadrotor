@@ -55,15 +55,15 @@ The roll-pitch control is also a P controller in the body frame, Which is to tak
 Steps of roll-pitch control as follows,
 
 ```python
-        get collective acceleration: c = -thrust_cmd / DRONE_MASS
-        actual portion of acceleration on x and y direction from rotation matrix
-        target portion of acceleration on x, y and z direction: b_c = acceleration_cmd / c
-        compute current position error of b term:  b_err = b_c - b
-        compute target change rate of b term: b_dot_c = self.k_p_euler_angles[:2][::-1] * b_err
-        r = np.array([[R[1, 0], -R[0, 0]],
-                      [R[1, 1], -R[0, 1]]],
-                     dtype=np.float)
-        generate the target roll and pitch rate with matrix multiplication: pq_c = np.dot(r, b_dot_c) / R[2, 2]
+        1. get collective acceleration: c = -thrust_cmd / DRONE_MASS
+        2. actual portion of acceleration on x and y direction from rotation matrix
+        3. target portion of acceleration on x, y and z direction: b_c = acceleration_cmd / c
+        4. compute current position error of b term:  b_err = b_c - b
+        5. compute target change rate of b term: b_dot_c = self.k_p_euler_angles[:2][::-1] * b_err
+        6. r = np.array([[R[1, 0], -R[0, 0]],
+                        [R[1, 1], -R[0, 1]]],
+                        dtype=np.float)
+        7. generate the target roll and pitch rate with matrix multiplication: pq_c = np.dot(r, b_dot_c) / R[2, 2]
 
 ```
 - python: lines 138 to 164 in controller.py
@@ -72,12 +72,12 @@ Steps of roll-pitch control as follows,
 ##### 2.1.3 Implement altitude control 
 Steps of altitude control as follows,
 ```python
-        get actual b term on z direction from rotation matrix
-        compute current position error in z direction
-        compute current vertical error in z direction
-        compute target acceleration in z direction
-        generate the thrust command 
-        constrain the thrust command within a set of bounds (0.1, MAX_THRUST)
+        1. get actual b term on z direction from rotation matrix
+        2. compute current position error in z direction
+        3. compute current vertical error in z direction
+        4. compute target acceleration in z direction
+        5. generate the thrust command 
+        6. constrain the thrust command within a set of bounds (0.1, MAX_THRUST)
 ```
 - python: lines 113 to 136 in controller.py
 - C++: lines 170 to 207 in QuadControl.cpp
@@ -85,10 +85,10 @@ Steps of altitude control as follows,
 ##### 2.1.4 Implement lateral position control
 Steps of lateral position control as follows,
 ```python
-        compute current position error in all direction in world frame
-        compute current velocity error in all direction in world frame	
-        generate the target acceleration command 
-        constrain thetarget acceleration within a set of bounds (-maxAccelXY, maxAccelXY)
+        1. compute current position error in all direction in world frame
+        2. compute current velocity error in all direction in world frame	
+        3. generate the target acceleration command 
+        4. constrain thetarget acceleration within a set of bounds (-maxAccelXY, maxAccelXY)
 ```
 - python: lines 94 to 110 in controller.py
 - C++: lines 210 to 251 in QuadControl.cpp
@@ -96,15 +96,23 @@ Steps of lateral position control as follows,
 ##### 2.1.5 Implement yaw control 
 Steps of yaw control as follows,
 ```python
-        compute current yaw error
-        generate the target yaw rate command
+        1. compute current yaw error
+        2. generate the target yaw rate command
 ```
 - python: lines 181 to 198 in controller.py
 - C++: lines 255 to 274 in QuadControl.cpp
 
 
 #### 2.2 Flight Evaluation
-##### 2.2.1 Flight In python   
+##### 2.2.1 python result
+
+![horizontal_err](./images/horizontal_err.png)  ![vertical_err](./images/vertical_err.png)
+
+Maximum Horizontal Error:  1.849718426647089
+Maximum Vertical Error:  0.8289364107225587
+Mission Time:  19.8324576
+Mission Success:  True
+
 
 ##### 2.2.2 Flight In C++
 
@@ -113,8 +121,3 @@ Steps of yaw control as follows,
 ##### Scenario 3
 ##### Scenario 4
 ##### Scenario 5
-
-
-
-
-
