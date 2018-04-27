@@ -41,10 +41,10 @@ The yaw controller is controlled through the reactive moment command and that co
 
 The body rate control is a P controller on body rates to commanded moments. Steps of body rate control as follows,
 ```python
-        compute current body rate error in all direction (r, p and q)
-        compute angular acceleration 
-        generate the rotational moment
-        constrain the desired moment within a set of bounds (-MAX_TORQUE, MAX_TORQUE)
+        1. compute current body rate error in all direction (r, p and q)
+        2. compute angular acceleration 
+        3. generate the rotational moment
+        4. constrain the desired moment within a set of bounds (-MAX_TORQUE, MAX_TORQUE)
 ```
 
 - python: lines 165 to 178 in controller.py
@@ -104,7 +104,7 @@ Steps of yaw control as follows,
 
 
 #### 2.2 Flight Evaluation
-##### 2.2.1 Flight In Python   
+##### 2.2.1 Flight In python   
 
 ##### 2.2.2 Flight In C++
 
