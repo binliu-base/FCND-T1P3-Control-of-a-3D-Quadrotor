@@ -108,10 +108,7 @@ Steps of yaw control as follows,
 
 The quadrotors controlled by the trajectory following controller successfully fly around the desired 3D trajectory within the desired limits.
 
-Maximum Horizontal Error:  1.849718426647089 
-Maximum Vertical Error:  0.8289364107225587 
-Mission Time:  19.8324576 
-Mission Success:  True   
+![python result](python_result.png) 
 
 ![horizontal_err](./images/horizontal_err.png)  ![vertical_err](./images/vertical_err.png)
 
