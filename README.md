@@ -44,7 +44,7 @@ The body rate control is a P controller on body rates to commanded moments. Step
         compute current body rate error in all direction (r, p and q)
         compute angular acceleration 
         generate the rotational moment
-		constrain the desired moment within a set of bounds (-MAX_TORQUE, MAX_TORQUE)
+        constrain the desired moment within a set of bounds (-MAX_TORQUE, MAX_TORQUE)
 ```
 
 - python: lines 165 to 178 in controller.py
@@ -55,7 +55,6 @@ The roll-pitch control is also a P controller in the body frame, Which is to tak
 Steps of roll-pitch control as follows,
 
 ```python
-
         get collective acceleration: c = -thrust_cmd / DRONE_MASS
         actual portion of acceleration on x and y direction from rotation matrix
         target portion of acceleration on x, y and z direction: b_c = acceleration_cmd / c
@@ -77,8 +76,8 @@ Steps of altitude control as follows,
         compute current position error in z direction
         compute current vertical error in z direction
         compute target acceleration in z direction
-		generate the thrust command 
-		constrain the thrust command within a set of bounds (0.1, MAX_THRUST)
+        generate the thrust command 
+        constrain the thrust command within a set of bounds (0.1, MAX_THRUST)
 ```
 - python: lines 113 to 136 in controller.py
 - C++: lines 170 to 207 in QuadControl.cpp
@@ -88,8 +87,8 @@ Steps of lateral position control as follows,
 ```python
         compute current position error in all direction in world frame
         compute current velocity error in all direction in world frame	
-		generate the target acceleration command 
-		constrain thetarget acceleration within a set of bounds (-maxAccelXY, maxAccelXY)
+        generate the target acceleration command 
+        constrain thetarget acceleration within a set of bounds (-maxAccelXY, maxAccelXY)
 ```
 - python: lines 94 to 110 in controller.py
 - C++: lines 210 to 251 in QuadControl.cpp
@@ -98,7 +97,7 @@ Steps of lateral position control as follows,
 Steps of yaw control as follows,
 ```python
         compute current yaw error
-		generate the target yaw rate command
+        generate the target yaw rate command
 ```
 - python: lines 181 to 198 in controller.py
 - C++: lines 255 to 274 in QuadControl.cpp
