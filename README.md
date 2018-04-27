@@ -12,7 +12,7 @@ Finally, We test the C++ code controller with another simulator that udacity pro
 
 ![ Cascade Control Architecture](./images/3d-control-arch.png)
 
-The 3D Control Architecture Diagram shows a cascade PID control system with 5 controllers, 4 actuators (u1 to u4) acting on cascade control loops. A feed-forward approach was used in the system, which adapts the motion parameters sent to the vehicle controller. For the theory behind the controller design, Please read sections 3 and 4 of this paper [Feed-Forward Parameter Identification for Precise Periodic Quadrocopter Motions](http://www.dynsyslab.org/wp-content/papercite-data/pdf/schoellig-acc12.pdf).
+The 3D Control Architecture Diagram shows a cascade PID control system with 5 controllers, 4 actuators (u1 to u4) acting on cascade control loops. A feed-forward approach was used in the system, which adapts the motion parameters sent to the vehicle controller. For the theory behind the controller design, Please read sections 3 and 4 of this paper [Feed-Forward Parameter Identification for Precise Periodic Quadrocopter Motions](http://www.dynsyslab.org/wp-content/papercite-data/pdf/schoellig-acc12.pdf).The author of this paper is our instructor, [Angela P. Schoellig](http://www.dynsyslab.org/prof-angela-schoellig/)
 
 
 #### Trajectory Breakdown
