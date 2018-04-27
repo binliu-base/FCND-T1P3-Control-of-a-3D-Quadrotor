@@ -49,7 +49,7 @@ The body rate control is a P controller on body rates to commanded moments. Step
 
 - python: lines 165 to 178 in controller.py
 - C++: lines 97 to 117 in QuadControl.cpp
-
+  
 ##### 2.1.2  Implement roll pitch control 
 The roll-pitch control is also a P controller in the body frame, Which is to take a thrust command as well as the desired x and y accelerations and attitude pitch, roll, yaw and p, q, r. and output a target roll and pitch rate.
 Steps of roll-pitch control as follows,
@@ -104,18 +104,20 @@ Steps of yaw control as follows,
 
 
 #### 2.2 Flight Evaluation
+The quadrotors controlled by the trajectory following controller successfully fly around the desired 3D trajectory within the desired limits in both python and C++ simulator environment.
+
 ##### 2.2.1 python result
-
-The quadrotors controlled by the trajectory following controller successfully fly around the desired 3D trajectory within the desired limits.
-
-![python result](python_result.png) 
+![python result](./images/python_result.png) 
 
 ![horizontal_err](./images/horizontal_err.png)  ![vertical_err](./images/vertical_err.png)
 
 ##### 2.2.2 Flight In C++
 
-##### Scenario 1      
 ##### Scenario 2
+![scenario2](./images/scenario2.png)  
 ##### Scenario 3
+![scenario3](./images/scenario3.png)  
 ##### Scenario 4    
+![scenario4](./images/scenario4.png)  
 ##### Scenario 5
+![scenario5](./images/scenario5.png)  
