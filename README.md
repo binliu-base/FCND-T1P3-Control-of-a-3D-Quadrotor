@@ -70,7 +70,7 @@ Steps of roll-pitch control as follows,
 - python: lines 138 to 164 in controller.py
 - C++: lines 125 to 168 in QuadControl.cpp
 
-###### Implement altitude control 
+##### 2.1.3 Implement altitude control 
 Steps of altitude control as follows,
 ```python
         get actual b term on z direction from rotation matrix
@@ -83,7 +83,7 @@ Steps of altitude control as follows,
 - python: lines 113 to 136 in controller.py
 - C++: lines 170 to 207 in QuadControl.cpp
 
-###### Implement lateral position control
+##### 2.1.4 Implement lateral position control
 Steps of lateral position control as follows,
 ```python
         compute current position error in all direction in world frame
@@ -94,7 +94,7 @@ Steps of lateral position control as follows,
 - python: lines 94 to 110 in controller.py
 - C++: lines 210 to 251 in QuadControl.cpp
 
-###### Implement yaw control 
+##### 2.1.5 Implement yaw control 
 Steps of yaw control as follows,
 ```python
         compute current yaw error
@@ -103,18 +103,8 @@ Steps of yaw control as follows,
 - python: lines 181 to 198 in controller.py
 - C++: lines 255 to 274 in QuadControl.cpp
 
-##### 2.1.1 Implemented Controller In C++
-###### Implemented body rate control
-
-###### Implement roll pitch control
-
-###### Implement altitude control
-###### Implement lateral position 
-###### Implement yaw control
-###### Implement calculating the motor commands given commanded thrust and moments in C++
 
 #### 2.2 Flight Evaluation
-
 ##### 2.2.1 Flight In Python   
 
 ##### 2.2.2 Flight In C++
